@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-// 🔹 Avval interfeys yaratamiz
 export interface Teacher {
   id: number;
   name: string;
@@ -10,7 +9,7 @@ export interface Teacher {
 
 @Injectable()
 export class TeachersService {
-  // endi massiv turi Teacher[] deb belgilanadi
+ 
   private teachers: Teacher[] = [];
 
   // Yangi teacher yaratish

@@ -1,60 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Attendance } from './entities/attendance.entity';
-import { Student } from '../students/entities/student.entity';
-import { Group } from '../groups/entities/group.entity';
-import { CreateAttendanceDto } from './dto/create-attendance.dto';
-import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 
 @Injectable()
 export class AttendanceService {
-  constructor(
-    @InjectRepository(Attendance)
-    private readonly attendanceRepo: Repository<Attendance>,
-    @InjectRepository(Student)
-    private readonly studentRepo: Repository<Student>,
-    @InjectRepository(Group)
-    private readonly groupRepo: Repository<Group>,
-  ) {}
+  private records: any[] = [];
 
-  async create(dto: CreateAttendanceDto) {
-    const student = await this.studentRepo.findOneBy({ id: dto.studentId });
-    const group = await this.groupRepo.findOneBy({ id: dto.groupId });
-    if (!student || !group) {
-      throw new Error('Student yoki Group topilmadi');
-    }
-
-    const record = this.attendanceRepo.create({
-      student,
-      group,
-      date: dto.date,
-      present: dto.present,
-    });
-    return this.attendanceRepo.save(record);
+  create(record: any) {
+    const newRecord = { id: Date.now(), ...record };
+    this.records.push(newRecord);
+    return newRecord;
   }
 
   findAll() {
-    return this.attendanceRepo.find({ relations: ['student', 'group'] });
+    return this.records;
   }
 
   findOne(id: number) {
-    return this.attendanceRepo.findOne({ where: { id }, relations: ['student', 'group'] });
+    return this.records.find((r) => r.id === id);
   }
 
-  async update(id: number, dto: UpdateAttendanceDto) {
-    const record = await this.attendanceRepo.findOneBy({ id });
-    if (!record) throw new Error('Davomat topilmadi');
-
-    Object.assign(record, dto);
-    return this.attendanceRepo.save(record);
+  update(id: number, data: any) {
+    const index = this.records.findIndex((r) => r.id === id);
+    if (index === -1) return { message: 'Record not found' };
+    this.records[index] = { ...this.records[index], ...data };
+    return this.records[index];
   }
 
   remove(id: number) {
-    return this.attendanceRepo.delete(id);
-  }
-
-  async findByDate(date: string) {
-    return this.attendanceRepo.find({ where: { date }, relations: ['student', 'group'] });
+    this.records = this.records.filter((r) => r.id !== id);
+    return { message: 'Deleted successfully' };
   }
 }

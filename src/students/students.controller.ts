@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
-import { StudentsService, Student } from './students.service'; // ✅ interfeys import qilindi
+import { StudentsService, Student } from './students.service';
 
 @Controller('students')
 export class StudentsController {

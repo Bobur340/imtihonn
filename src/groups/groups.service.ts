@@ -1,50 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Group } from './entities/group.entity';
-import { Teacher } from '../teachers/entities/teacher.entity';
-import { CreateGroupDto } from './dto/create-group.dto';
-import { UpdateGroupDto } from './dto/update-group.dto';
 
 @Injectable()
 export class GroupsService {
-  constructor(
-    @InjectRepository(Group)
-    private readonly groupRepo: Repository<Group>,
-    @InjectRepository(Teacher)
-    private readonly teacherRepo: Repository<Teacher>,
-  ) {}
+  private groups: any[] = [];
 
-  async create(dto: CreateGroupDto) {
-    let teacher: Teacher | undefined = undefined;
-    if (dto.teacherId) {
-      const foundTeacher = await this.teacherRepo.findOneBy({ id: dto.teacherId });
-      teacher = foundTeacher ?? undefined;
-    }
-    const group = teacher
-      ? this.groupRepo.create({ ...dto, teacher })
-      : this.groupRepo.create({ ...dto });
-    return this.groupRepo.save(group);
+  create(group: any) {
+    const newGroup = { id: Date.now(), ...group };
+    this.groups.push(newGroup);
+    return newGroup;
   }
 
   findAll() {
-    return this.groupRepo.find({ relations: ['teacher', 'students'] });
+    return this.groups;
   }
 
   findOne(id: number) {
-    return this.groupRepo.findOne({ where: { id }, relations: ['teacher', 'students'] });
+    return this.groups.find((g) => g.id === id);
   }
 
-  async update(id: number, dto: UpdateGroupDto) {
-    const group = await this.groupRepo.findOneBy({ id });
-    if (!group) {
-      throw new Error(`Group with id ${id} not found`);
-    }
-    Object.assign(group, dto);
-    return this.groupRepo.save(group);
+  update(id: number, data: any) {
+    const index = this.groups.findIndex((g) => g.id === id);
+    if (index === -1) return { message: 'Group not found' };
+    this.groups[index] = { ...this.groups[index], ...data };
+    return this.groups[index];
   }
 
   remove(id: number) {
-    return this.groupRepo.delete(id);
+    this.groups = this.groups.filter((g) => g.id !== id);
+    return { message: 'Deleted successfully' };
   }
 }

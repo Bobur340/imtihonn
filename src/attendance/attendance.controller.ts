@@ -1,17 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
-import { CreateAttendanceDto } from './dto/create-attendance.dto';
-import { UpdateAttendanceDto } from './dto/update-attendance.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('attendance')
-@UseGuards(JwtAuthGuard)
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
   @Post()
-  create(@Body() dto: CreateAttendanceDto) {
-    return this.attendanceService.create(dto);
+  create(@Body() body: any) {
+    return this.attendanceService.create(body);
   }
 
   @Get()
@@ -21,21 +17,16 @@ export class AttendanceController {
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.attendanceService.findOne(id);
+    return this.attendanceService.findOne(Number(id));
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() dto: UpdateAttendanceDto) {
-    return this.attendanceService.update(id, dto);
+  update(@Param('id') id: number, @Body() data: any) {
+    return this.attendanceService.update(Number(id), data);
   }
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    return this.attendanceService.remove(id);
-  }
-
-  @Get('date/:date')
-  findByDate(@Param('date') date: string) {
-    return this.attendanceService.findByDate(date);
+    return this.attendanceService.remove(Number(id));
   }
 }

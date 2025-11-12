@@ -5,13 +5,14 @@ import { AuthModule } from './auth/auth.module';
 import { User } from './auth/user.entity';
 import { StudentsModule } from './students/students.module';
 import { TeachersModule } from './teachers/teachers.module';
+import { GroupsModule } from './groups/groups.module';
+import { AttendanceModule } from './attendance/attendance.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
-    // 🔧 ENV konfiguratsiya global bo‘lsin
     ConfigModule.forRoot({ isGlobal: true }),
-
-    // 🗄 PostgreSQL ulanish
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
@@ -22,15 +23,13 @@ import { TeachersModule } from './teachers/teachers.module';
       entities: [User],
       synchronize: true,
     }),
-
-    // 🔐 Auth (login/register)
     AuthModule,
-
-    // 👨‍🎓 Students CRUD
     StudentsModule,
-
-    // 👨‍🏫 Teachers CRUD
     TeachersModule,
+    GroupsModule,      
+    AttendanceModule,  
+    DashboardModule,
+    PaymentsModule,
   ],
 })
 export class AppModule {}

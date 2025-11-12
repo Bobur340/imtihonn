@@ -1,24 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Student } from '../students/entities/student.entity';
+import { StudentsService } from '../students/students.service';
+import { TeachersService } from '../teachers/teachers.service';
+import { GroupsService } from '../groups/groups.service';
+import { AttendanceService } from '../attendance/attendance.service';
 
 @Injectable()
 export class DashboardService {
   constructor(
-    @InjectRepository(Student)
-    private readonly studentRepo: Repository<Student>,
+    private readonly studentsService: StudentsService,
+    private readonly teachersService: TeachersService,
+    private readonly groupsService: GroupsService,
+    private readonly attendanceService: AttendanceService,
   ) {}
 
-  async getStats() {
-    const totalStudents = await this.studentRepo.count();
-    const monthlyStats = await this.studentRepo
-      .createQueryBuilder('student')
-      .select("TO_CHAR(student.createdAt, 'Month')", 'month')
-      .addSelect('COUNT(student.id)', 'count')
-      .groupBy('month')
-      .getRawMany();
+  getDashboardData() {
+    const students = this.studentsService.findAll();
+    const teachers = this.teachersService.findAll();
+    const groups = this.groupsService.findAll();
+    const attendance = this.attendanceService.findAll();
 
-    return { totalStudents, monthlyStats };
+    return {
+      totalStudents: students.length,
+      totalTeachers: teachers.length,
+      totalGroups: groups.length,
+      totalAttendanceRecords: attendance.length,
+    };
   }
 }

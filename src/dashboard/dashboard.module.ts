@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
-import { Student } from '../students/entities/student.entity';
-import { Teacher } from '../teachers/entities/teacher.entity';
-import { Group } from '../groups/entities/group.entity';
-import { Payment } from '../payments/entities/payment.entity';
+import { DashboardService } from './dashboard.service';
+import { StudentsModule } from '../students/students.module';
+import { TeachersModule } from '../teachers/teachers.module';
+import { GroupsModule } from '../groups/groups.module';
+import { AttendanceModule } from '../attendance/attendance.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Student, Teacher, Group, Payment])],
+  imports: [StudentsModule, TeachersModule, GroupsModule, AttendanceModule],
   controllers: [DashboardController],
   providers: [DashboardService],
 })
